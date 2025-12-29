@@ -25,19 +25,24 @@ license: MIT
 
 基于分析结果，从风格库中推荐2-3个最合适的风格，每个推荐需包含：
 
-- **风格名称**
+- **风格名称**（附带预览链接）
 - **推荐理由**：为什么适合这个项目
 - **核心特征**：3-5个关键设计特点
 - **适用场景**举例
 
+**重要**：每个推荐的风格标题必须包含 designprompts.dev 的预览链接，格式为：
+- 基础URL：`https://www.designprompts.dev/`
+- URL后缀：风格名转小写，空格替换为连字符
+- 例如：Modern Dark → `modern-dark`，Neo Brutalism → `neo-brutalism`
+
 推荐格式示例：
 
 ```markdown
-## 推荐的设计风格
+## 🎨 推荐的设计风格
 
 基于你的项目特征（高端珠宝品牌官网），我推荐以下风格：
 
-### 1. Luxury（推荐指数：⭐⭐⭐⭐⭐）
+### 1. [Luxury](https://www.designprompts.dev/luxury) ⭐⭐⭐⭐⭐
 **推荐理由**：专为奢侈品牌打造，强调优雅、精致和品质感
 
 **核心特征**：
@@ -48,7 +53,11 @@ license: MIT
 
 **典型应用**：高端时尚、珠宝、豪华酒店、艺术品牌
 
-### 2. Monochrome（推荐指数：⭐⭐⭐⭐）
+**👁️ [查看 Luxury 风格预览](https://www.designprompts.dev/luxury)**
+
+---
+
+### 2. [Monochrome](https://www.designprompts.dev/monochrome) ⭐⭐⭐⭐
 **推荐理由**：极简黑白设计，适合强调产品本身的高端品牌
 
 **核心特征**：
@@ -59,10 +68,49 @@ license: MIT
 
 **典型应用**：建筑设计、时尚杂志、艺术作品集
 
+**👁️ [查看 Monochrome 风格预览](https://www.designprompts.dev/monochrome)**
+
 ---
 
 你更倾向于哪个风格？或者需要我详细介绍某个风格？你也可以指定其他风格名称。
 ```
+
+#### 风格预览链接映射表
+
+所有30个风格的预览链接：
+
+| 风格名称 | 预览链接 |
+|---------|---------|
+| Monochrome | https://www.designprompts.dev/monochrome |
+| Bauhaus | https://www.designprompts.dev/bauhaus |
+| Modern Dark | https://www.designprompts.dev/modern-dark |
+| Newsprint | https://www.designprompts.dev/newsprint |
+| SaaS | https://www.designprompts.dev/saas |
+| Luxury | https://www.designprompts.dev/luxury |
+| Terminal | https://www.designprompts.dev/terminal |
+| Swiss Minimalist | https://www.designprompts.dev/swiss-minimalist |
+| Kinetic | https://www.designprompts.dev/kinetic |
+| Flat Design | https://www.designprompts.dev/flat-design |
+| Art Deco | https://www.designprompts.dev/art-deco |
+| Material Design | https://www.designprompts.dev/material-design |
+| Neo Brutalism | https://www.designprompts.dev/neo-brutalism |
+| Bold Typography | https://www.designprompts.dev/bold-typography |
+| Academia | https://www.designprompts.dev/academia |
+| Cyberpunk | https://www.designprompts.dev/cyberpunk |
+| Web3 | https://www.designprompts.dev/web3 |
+| Playful Geometric | https://www.designprompts.dev/playful-geometric |
+| Minimal Dark | https://www.designprompts.dev/minimal-dark |
+| Claymorphism | https://www.designprompts.dev/claymorphism |
+| Professional | https://www.designprompts.dev/professional |
+| Botanical | https://www.designprompts.dev/botanical |
+| Vaporwave | https://www.designprompts.dev/vaporwave |
+| Enterprise | https://www.designprompts.dev/enterprise |
+| Sketch | https://www.designprompts.dev/sketch |
+| Industrial | https://www.designprompts.dev/industrial |
+| Neumorphism | https://www.designprompts.dev/neumorphism |
+| Organic | https://www.designprompts.dev/organic |
+| Maximalism | https://www.designprompts.dev/maximalism |
+| Retro | https://www.designprompts.dev/retro |
 
 ### 第三步：加载设计系统
 
@@ -342,6 +390,92 @@ license: MIT
 4. **动效细节**：遵循设计系统的动效规范
 5. **可访问性**：确保对比度、焦点状态、键盘导航
 6. **代码质量**：清晰、可维护、符合最佳实践
+7. **图标系统**：统一使用 Lucide 图标库（详见下方图标规范）
+
+## 图标库规范
+
+所有30个设计系统统一使用 **Lucide** 作为图标库：
+
+### 安装和使用
+
+**React 项目**：
+```bash
+npm install lucide-react
+```
+
+```tsx
+import { ChevronDown, Check, Star, Menu } from 'lucide-react'
+
+<ChevronDown size={20} strokeWidth={2} />
+```
+
+**Vue 项目**：
+```bash
+npm install lucide-vue-next
+```
+
+**其他框架**：
+- Svelte: `lucide-svelte`
+- 纯 HTML/JS: `lucide` (静态图标)
+
+### 基础配置
+
+大部分设计风格的默认配置：
+- **尺寸**：`size={20}` (按钮/导航) 或 `size={24}` (图标按钮)
+- **描边宽度**：`strokeWidth={2}` (标准) 或 `strokeWidth={1.5}` (精致风格)
+- **颜色**：继承父元素的文本颜色 `currentColor`
+
+### 不同风格的图标处理
+
+不同设计系统对图标有特殊要求：
+
+**极简/优雅风格**（Monochrome, Swiss Minimalist, Luxury）：
+- 使用更细的描边：`strokeWidth={1.5}` 或 `strokeWidth={1}`
+- 较大的尺寸：`size={24}`
+- 慎用装饰性图标
+
+**粗犷/大胆风格**（Neo Brutalism, Bauhaus, Bold Typography）：
+- 更粗的描边：`strokeWidth={2.5}` 或 `strokeWidth={3}`
+- 可能需要填充版本或几何图标
+- 图标可作为视觉装饰元素
+
+**技术/极客风格**（Terminal, Cyberpunk, Modern Dark）：
+- 标准配置：`size={20} strokeWidth={2}`
+- 可能需要特殊图标：终端符号、代码图标
+- 图标通常很功能性，不做装饰
+
+**3D/立体风格**（Claymorphism, Neumorphism, Industrial）：
+- 可能需要将图标放在圆形/方形容器中
+- 添加阴影和深度效果
+- 图标本身保持简洁
+
+### 可访问性要求
+
+- **图标按钮必须有标签**：使用 `aria-label` 或可见文本
+  ```tsx
+  <button aria-label="关闭菜单">
+    <X size={20} />
+  </button>
+  ```
+
+- **装饰性图标**：添加 `aria-hidden="true"`
+  ```tsx
+  <Star size={16} aria-hidden="true" />
+  <span>收藏</span>
+  ```
+
+### 为什么选择 Lucide
+
+- ✅ **现代简洁**：设计精致，适合所有30个风格
+- ✅ **React 友好**：`lucide-react` 包成熟稳定
+- ✅ **体积优化**：支持 tree-shaking，只打包使用的图标
+- ✅ **开源免费**：MIT 协议
+- ✅ **持续更新**：活跃维护，图标库不断扩充
+- ✅ **跨框架**：支持 React、Vue、Svelte 等
+
+### 图标浏览
+
+访问 [lucide.dev](https://lucide.dev) 浏览完整图标库（1000+ 图标）
 
 ## 重要提示
 
