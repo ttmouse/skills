@@ -57,6 +57,14 @@ description: 元技能 - 对话复盘与技能进化。在对话结束后分析�
 - [ ] 有无遗漏的边界情况？
 - [ ] 有无可补充的示例？
 - [ ] 流程是否可简化？
+- [ ] 官方技能是否有更新？（针对来自 anthropics/skills 仓库的技能）
+
+**官方技能更新检查**
+
+对于来自官方仓库的技能（如 skill-creator、pdf、docx 等），检查是否有新版本：
+- 仓库地址：`https://github.com/anthropics/skills/tree/main/skills`
+- 获取原始文件：`https://raw.githubusercontent.com/anthropics/skills/main/skills/[skill-name]/SKILL.md`
+- 若有更新，在优化建议中标注"官方已更新，建议同步"
 
 **输出格式**（直接输出，无需确认）
 
