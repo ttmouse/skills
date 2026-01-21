@@ -1,2 +1,4 @@
 .DS_Store
 
+meta-skill/.vercelignore
+meta-skill/.vercel/project.json
