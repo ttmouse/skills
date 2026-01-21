@@ -1,0 +1,101 @@
+# 语音记录分析框架
+
+# 场景识别规则
+scene_recognition:
+  功能需求:
+    keywords: [功能, 需求, 增加, 新增, 实现, 改成, 支持]
+    description: "用户提出新的功能需求"
+
+  交互设计:
+    keywords: [点击, 滚动, 选中, 触发, 悬停, 点击之后, 打开]
+    description: "关于界面交互的设计"
+
+  界面反馈:
+    keywords: [看, 显示, 展示, 布局, 位置, 样式, 视觉]
+    description: "关于界面展示的反馈"
+
+  问题反馈:
+    keywords: [问题, 错误, bug, 无法, 不正常, 没有]
+    description: "发现并反馈问题"
+
+  优化建议:
+    keywords: [优化, 改进, 调整, 更新, 完善]
+    description: "对现有功能的优化建议"
+
+  协作沟通:
+    keywords: [等, 先不要, 再, 帮我, 看一下, 检查, 验证]
+    description: "协作过程中的沟通"
+
+# 工作流阶段识别
+workflow_stages:
+  需求阶段:
+    keywords: [需求, 想要, 希望, 功能]
+    description: "需求的提出和澄清"
+
+  设计阶段:
+    keywords: [交互, 布局, 样式, 体验]
+    description: "设计和交互方案"
+
+  实现阶段:
+    keywords: [实现, 做成, 代码, 修改]
+    description: "具体的实现工作"
+
+  测试阶段:
+    keywords: [测试, 检查, 验证, 走查, 看有没有问题]
+    description: "测试和验证工作"
+
+  修复阶段:
+    keywords: [问题, bug, 修复, 调整]
+    description: "问题修复阶段"
+
+# 协作模式识别
+collaboration_patterns:
+  指令型:
+    keywords: [帮我, 你帮我, 做成, 实现]
+    description: "直接给出明确指令"
+
+  建议型:
+    keywords: [可以, 考虑, 或许, 建议]
+    description: "提出建议而非指令"
+
+  质疑型:
+    keywords: [为什么, 怎么, 是不是, 对吗]
+    description: "提出疑问和质疑"
+
+  授权型:
+    keywords: [等, 先不要, 等你]
+    description: "授权对方先等待"
+
+  期望型:
+    keywords: [我希望, 我预期, 我想要]
+    description: "表达期望和预期"
+
+# 报告生成规则
+report_generation:
+  min_records_for_analysis: 5    # 最少记录数才生成报告
+  sample_record_count: 10        # 附录中显示的采样记录数
+  high_frequency_threshold: 3    # 场景出现超过3次标记为高频
+
+# 场景特定配置
+scenario_configs:
+  AI编程:
+    keywords: [代码, 编程, 开发, 实现, bug, 修复]
+    dimensions:
+      - 工作流分析
+      - 协作模式
+      - 代码模式
+      - 技术栈
+
+  产品设计:
+    keywords: [需求, 功能, 交互, 体验, 用户]
+    dimensions:
+      - 需求模式
+      - 设计语言
+      - 决策类型
+
+  团队协作:
+    keywords: [会议, 讨论, 同步, 对齐]
+    dimensions:
+      - 沟通效率
+      - 信息同步
+      - 共识建立

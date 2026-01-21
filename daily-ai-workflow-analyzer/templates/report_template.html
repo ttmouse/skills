@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语音记录分析报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header .meta {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: -30px auto 30px;
+            padding: 0 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #667eea;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .insight {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .insight .label {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .action {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .action .label {
+            font-weight: 600;
+            color: #155724;
+            margin-bottom: 8px;
+        }
+
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .content h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .content h3 {
+            font-size: 20px;
+            color: #555;
+            margin: 25px 0 15px;
+        }
+
+        .content h4 {
+            font-size: 16px;
+            color: #666;
+            margin: 20px 0 10px;
+        }
+
+        .content ul,
+        .content ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        .content li {
+            margin: 8px 0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .tag.high {
+            background: #fee;
+            color: #c33;
+        }
+
+        .tag.medium {
+            background: #ffc;
+            color: #963;
+        }
+
+        .tag.low {
+            background: #eef;
+            color: #36c;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 30px 20px;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 语音记录分析报告</h1>
+        <div class="meta">
+            <span id="generatedTime"></span> | 
+            时间范围：<span id="timeRange"></span> | 
+            记录数量：<span id="totalRecords"></span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 统计卡片 -->
+        <div class="grid">
+            <div class="card">
+                <h2>总记录数</h2>
+                <div class="stat-value" id="statTotalRecords">0</div>
+                <div class="stat-label">条</div>
+            </div>
+            <div class="card">
+                <h2>高峰时段</h2>
+                <div class="stat-value" id="statPeakHour">-</div>
+                <div class="stat-label" id="statPeakRatio">占比 0%</div>
+            </div>
+            <div class="card">
+                <h2>平均时长</h2>
+                <div class="stat-value" id="statAvgDuration">0</div>
+                <div class="stat-label">秒/条</div>
+            </div>
+        </div>
+
+        <!-- 核心洞察 -->
+        <div class="card" id="insightsCard" style="display: none;">
+            <h2>核心洞察</h2>
+            <div id="insightsContent"></div>
+        </div>
+
+        <!-- 数据可视化 -->
+        <div class="grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="card">
+                <h2>场景分布</h2>
+                <canvas id="sceneChart"></canvas>
+            </div>
+            <div class="card">
+                <h2>时段分布</h2>
+                <canvas id="timeChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 详细报告 -->
+        <div class="content">
+            <div id="reportContent">
+                <!-- 报告内容将在这里动态注入 -->
+            </div>
+        </div>
+
+        <!-- 底部 -->
+        <div class="card" style="text-align: center; color: #999;">
+            <p>本报告由 DailyAIWorkflowAnalyzer 自动生成</p>
+            <p style="margin-top: 10px; font-size: 12px;">生成时间：<span id="footerTime"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后填充数据
+        window.onload = function() {
+            fillMetadata();
+            renderReport();
+            renderCharts();
+        };
+
+        function fillMetadata() {
+            document.getElementById('generatedTime').textContent = 'GENERATED_TIME';
+            document.getElementById('timeRange').textContent = 'TIME_RANGE';
+            document.getElementById('totalRecords').textContent = 'TOTAL_RECORDS';
+            document.getElementById('footerTime').textContent = 'GENERATED_TIME';
+
+            document.getElementById('statTotalRecords').textContent = 'TOTAL_RECORDS';
+            document.getElementById('statPeakHour').textContent = 'PEAK_HOUR';
+            document.getElementById('statPeakRatio').textContent = 'PEAK_RATIO';
+            document.getElementById('statAvgDuration').textContent = 'AVG_DURATION';
+        }
+
+        function renderReport() {
+            const markdown = `MARKDOWN_CONTENT`;
+            const html = markdownToHtml(markdown);
+            document.getElementById('reportContent').innerHTML = html;
+
+            // 提取核心洞察
+            const insights = extractInsights(markdown);
+            if (insights.length > 0) {
+                document.getElementById('insightsCard').style.display = 'block';
+                document.getElementById('insightsContent').innerHTML = insights;
+            }
+        }
+
+        function extractInsights(markdown) {
+            // 提取核心模式、关键问题、可沉淀价值
+            let insights = '';
+            
+            // 提取核心模式
+            const corePatternMatch = markdown.match(/### 核心模式\s*\n([\s\S]*?)(?=\n###|$)/);
+            if (corePatternMatch) {
+                insights += `<div class="insight"><div class="label">🎯 核心模式</div>${corePatternMatch[1].trim()}</div>`;
+            }
+
+            // 提取关键问题
+            const keyProblemsMatch = markdown.match(/### 关键问题\s*\n([\s\S]*?)(?=\n###|$)/);
+            if (keyProblemsMatch) {
+                insights += `<div class="insight"><div class="label">⚠️ 关键问题</div>${keyProblemsMatch[1].trim()}</div>`;
+            }
+
+            return insights;
+        }
+
+        function renderCharts() {
+            const scenes = SCENE_DATA;
+            const times = TIME_DATA;
+
+            if (scenes && scenes.length > 0) {
+                renderSceneChart(scenes);
+            }
+
+            if (times && times.length > 0) {
+                renderTimeChart(times);
+            }
+        }
+
+        function renderSceneChart(scenes) {
+            const ctx = document.getElementById('sceneChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: scenes.map(s => s.scene),
+                    datasets: [{
+                        data: scenes.map(s => s.count),
+                        backgroundColor: [
+                            '#667eea', '#764ba2', '#f093fb', '#f5576c',
+                            '#4facfe', '#00f2fe', '#43e97b', '#38f9d7'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTimeChart(times) {
+            const ctx = document.getElementById('timeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: times.map(t => t.hour),
+                    datasets: [{
+                        label: '记录数',
+                        data: times.map(t => t.count),
+                        backgroundColor: '#667eea',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function markdownToHtml(markdown) {
+            let html = markdown;
+
+            // 标题
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h4>$1</h4>');
+            html = html.replace(/^# (.*$)/gim, '<h3>$1</h3>');
+
+            // 表格
+            html = html.replace(/\|(.*)\|/g, function(match) {
+                const cells = match.split('|').filter(c => c.trim() !== '');
+                if (cells.some(c => c.includes('---'))) {
+                    return '';
+                }
+                return '<tr>' + cells.map(c => `<td style="padding: 10px; border-bottom: 1px solid #eee;">${c.trim()}</td>`).join('') + '</tr>';
+            });
+            html = html.replace(/(<tr>.*<\/tr>)\n/g, '<table style="width: 100%; border-collapse: collapse; margin: 15px 0;">$1</table>\n');
+
+            // 列表
+            html = html.replace(/^- (.*$)/gim, '<li>$1</li>');
+            html = html.replace(/^\d+\. (.*$)/gim, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)\n/g, '<ul style="margin: 10px 0 10px 20px;">$1</ul>\n');
+
+            // 粗体
+            html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
+
+            // 段落
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = '<p>' + html + '</p>';
+
+            return html;
+        }
+    </script>
+</body>
+</html>

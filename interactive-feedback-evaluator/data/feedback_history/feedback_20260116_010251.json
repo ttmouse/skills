@@ -1,0 +1,24 @@
+{
+  "evaluation_type": "analysis-report",
+  "title": "Alma 深度洞察分析报告 v2.0 测试",
+  "metadata": {
+    "test_mode": true,
+    "timestamp": "2026-01-15T05:45:00Z"
+  },
+  "scores": {
+    "overall": "3",
+    "usefulness": "3",
+    "actionability": "3"
+  },
+  "multi_select": {
+    "most_valuable": [
+      "cognitive_bias",
+      "strategy_blind_spot"
+    ]
+  },
+  "text_input": {
+    "suggestions": "",
+    "first_action": ""
+  },
+  "timestamp": "2026-01-15T17:02:51.634Z"
+}

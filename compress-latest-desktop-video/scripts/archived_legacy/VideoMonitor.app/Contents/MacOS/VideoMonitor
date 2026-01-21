@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Video Monitor Menu Bar App Wrapper
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MONITOR_SCRIPT="$SCRIPT_DIR/../../monitor.sh"
+
+# 检查是否已经在运行
+if [ -f "/tmp/video_monitor.pid" ]; then
+    pid=$(cat "/tmp/video_monitor.pid")
+    if ps -p "$pid" > /dev/null 2>&1; then
+        # 已在运行，显示菜单
+        osascript -e 'tell application "System Events" to set frontmost of process "VideoMonitor" to true'
+        exit 0
+    fi
+fi
+
+# 启动监控进程
+bash "$MONITOR_SCRIPT" &
+echo $! > "/tmp/video_monitor.pid"
+
+# 使用 AppleScript 创建菜单栏图标
+osascript << 'EOF'
+tell application "System Events"
+    set videoMonitor to display notification "👀 视频监控已启动" with title "VideoMonitor"
+end tell
+EOF
+
+echo "监控已启动，PID: $(cat /tmp/video_monitor.pid)"

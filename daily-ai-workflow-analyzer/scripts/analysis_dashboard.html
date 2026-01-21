@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语音记录分析控制台</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header .meta {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+
+        .app-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .app-table th,
+        .app-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .app-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .app-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .chart-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .chart-card h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            background: #667eea;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 1200px;
+            height: 85%;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .modal-body pre {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .modal-body h1,
+        .modal-body h2,
+        .modal-body h3 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            color: #333;
+        }
+
+        .modal-body h1 {
+            font-size: 28px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .modal-body h2 {
+            font-size: 22px;
+            color: #555;
+        }
+
+        .modal-body h3 {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .modal-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .modal-body table th,
+        .modal-body table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .modal-body table th {
+            background: #f5f7fa;
+            font-weight: 600;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.analyzing {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .actions .btn {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 语音记录分析控制台</h1>
+            <div class="meta">
+                <span id="currentTime"></span> |
+                数据目录：<span id="dataDir"></span>
+            </div>
+        </div>
+
+        <!-- 报告模态框 -->
+        <div id="reportModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">分析报告</h3>
+                    <button class="close-btn" onclick="closeModal()">×</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- 报告内容将在这里加载 -->
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <div>正在加载数据...</div>
+        </div>
+
+        <div id="content" style="display: none;">
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="label">总记录数</div>
+                    <div class="value" id="totalRecords">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">APP数量</div>
+                    <div class="value" id="appCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">时间范围</div>
+                    <div class="value" id="timeRange">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">高峰时段</div>
+                    <div class="value" id="peakHour">-</div>
+                </div>
+            </div>
+
+            <!-- APP列表 -->
+            <div class="section">
+                <h2>📱 APP 数据概览</h2>
+                <table class="app-table">
+                    <thead>
+                        <tr>
+                            <th>APP名称</th>
+                            <th>记录数</th>
+                            <th>占比</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appTable">
+                        <!-- 动态填充 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 批量操作 -->
+            <div class="section">
+                <h2>⚡ 批量操作</h2>
+                <div class="actions">
+                    <button class="btn" onclick="analyzeAll()">🤖 分析所有APP</button>
+                    <button class="btn btn-secondary" onclick="exportReports()">📥 导出所有报告</button>
+                    <button class="btn btn-secondary" onclick="refreshData()">🔄 刷新数据</button>
+                </div>
+            </div>
+
+            <!-- 数据可视化 -->
+            <div class="section">
+                <h2>📈 数据可视化</h2>
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>APP分布</h3>
+                        <canvas id="appDistChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>时段分布</h3>
+                        <canvas id="timeDistChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let appsData = [];
+        let charts = {};
+
+        // 页面加载时初始化
+        window.onload = function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            loadData();
+        };
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN');
+        }
+
+        let pollingInterval = null;
+
+        function loadData() {
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('content').style.display = 'none';
+
+            // 从API加载数据
+            fetch('/api/data')
+                .then(response => response.json())
+                .then(data => {
+                    appsData = data;
+                    renderDashboard();
+
+                    document.getElementById('loading').classList.remove('active');
+                    document.getElementById('content').style.display = 'block';
+
+                    // 开始轮询分析状态
+                    startPolling();
+                })
+                .catch(error => {
+                    console.error('加载数据失败:', error);
+                    alert('无法加载数据，请确保服务器正在运行');
+                    document.getElementById('loading').classList.remove('active');
+                });
+        }
+
+        function startPolling() {
+            // 每3秒轮询一次分析状态
+            if (pollingInterval) clearInterval(pollingInterval);
+
+            pollingInterval = setInterval(() => {
+                fetch('/api/status')
+                    .then(response => response.json())
+                    .then(status => {
+                        let updated = false;
+                        for (let appName in status) {
+                            const app = appsData.find(a => a.name === appName);
+                            if (app && app.status !== status[appName]) {
+                                app.status = status[appName];
+                                updated = true;
+                            }
+                        }
+                        if (updated) {
+                            renderDashboard();
+                        }
+                    })
+                    .catch(error => console.error('状态更新失败:', error));
+            }, 3000);
+        }
+
+        function renderDashboard() {
+            // 更新统计数据
+            const total = appsData.reduce((sum, app) => sum + app.records, 0);
+            document.getElementById('totalRecords').textContent = total;
+            document.getElementById('appCount').textContent = appsData.length;
+            document.getElementById('timeRange').textContent = '5:00 - 22:00';
+            document.getElementById('peakHour').textContent = '18:00';
+            document.getElementById('dataDir').textContent = '当前目录';
+
+            // 渲染APP表格
+            const tbody = document.getElementById('appTable');
+            tbody.innerHTML = '';
+
+            appsData.forEach((app, index) => {
+                const ratio = ((app.records / total) * 100).toFixed(1);
+                const statusClass = app.status;
+                const statusText = {
+                    'pending': '待分析',
+                    'analyzing': '分析中',
+                    'completed': '已完成'
+                }[app.status];
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${app.name}</td>
+                        <td>${app.records}</td>
+                        <td>
+                            <div>${ratio}%</div>
+                            <div class="progress-bar">
+                                <div class="fill" style="width: ${ratio}%"></div>
+                            </div>
+                        </td>
+                        <td><span class="status ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <button class="btn" onclick="analyzeApp('${app.name}')">
+                                ${app.status === 'completed' ? '查看报告' : 'AI分析'}
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // 渲染图表
+            renderCharts();
+        }
+
+        function renderCharts() {
+            const ctx1 = document.getElementById('appDistChart').getContext('2d');
+            const ctx2 = document.getElementById('timeDistChart').getContext('2d');
+
+            if (charts.appDist) charts.appDist.destroy();
+            if (charts.timeDist) charts.timeDist.destroy();
+
+            // APP分布饼图
+            charts.appDist = new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: appsData.map(app => app.name),
+                    datasets: [{
+                        data: appsData.map(app => app.records),
+                        backgroundColor: [
+                            '#667eea', '#764ba2', '#f093fb', '#f5576c',
+                            '#4facfe', '#00f2fe', '#43e97b', '#38f9d7'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // 时段分布柱状图
+            charts.timeDist = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['5-8', '8-11', '11-14', '14-17', '17-20', '20-22'],
+                    datasets: [{
+                        label: '记录数',
+                        data: [35, 80, 120, 95, 150, 13],
+                        backgroundColor: '#667eea'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function analyzeApp(appName) {
+            const app = appsData.find(a => a.name === appName);
+            if (app.status === 'completed') {
+                // 在模态框中显示报告
+                showReport(appName);
+            } else {
+                // 触发AI分析
+                if (confirm(`确定要激活AI分析 ${appName} 吗？\n\n这将调用Python脚本进行深度分析，可能需要一些时间。`)) {
+                    // 调用API启动分析
+                    fetch('/api/analyze', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name: appName })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert(`启动分析失败: ${data.error}`);
+                            return;
+                        }
+
+                        app.status = 'analyzing';
+                        renderDashboard();
+                        alert(`${appName} 分析已启动，请稍候...`);
+                    })
+                    .catch(error => {
+                        console.error('分析请求失败:', error);
+                        alert('无法启动分析，请检查服务器是否正常运行');
+                    });
+                }
+            }
+        }
+
+        function showReport(appName) {
+            const modal = document.getElementById('reportModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            modalTitle.textContent = `${appName} 分析报告`;
+            modalBody.innerHTML = '<div class="loading active"><div class="spinner"></div><div>正在加载报告...</div></div>';
+            modal.classList.add('active');
+
+            // 从API加载报告
+            fetch(`/api/report/${encodeURIComponent(appName)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.error || '加载失败');
+                        });
+                    }
+                    return response.text();
+                })
+                .then(markdown => {
+                    // 改进的Markdown渲染
+                    const html = renderMarkdown(markdown);
+                    modalBody.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('加载报告失败:', error);
+                    modalBody.innerHTML = `
+                        <div style="padding: 40px; text-align: center; color: #666;">
+                            <h3 style="margin-bottom: 20px;">无法加载报告</h3>
+                            <p style="margin-bottom: 30px;">${error.message}</p>
+                            <p style="color: #999;">APP: ${appName}</p>
+                            <div style="margin-top: 30px; padding: 20px; background: #f5f7fa; border-radius: 8px; text-align: left;">
+                                <h4 style="margin-bottom: 15px;">调试信息：</h4>
+                                <p>请检查：</p>
+                                <ul style="margin-top: 10px; padding-left: 20px;">
+                                    <li>服务器是否正常运行 (http://localhost:8080)</li>
+                                    <li>报告文件是否存在</li>
+                                    <li>API是否可访问</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        function closeModal() {
+            document.getElementById('reportModal').classList.remove('active');
+        }
+
+        function renderMarkdown(markdown) {
+            // 改进的Markdown渲染
+            let html = markdown;
+
+            // 转义HTML（防止XSS）
+            html = html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            // 标题
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
+
+            // 引用块
+            html = html.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>');
+
+            // 表格
+            let lines = html.split('\n');
+            let inTable = false;
+            let tableHtml = '<table>';
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+
+                // 检查表格行
+                if (line.includes('|')) {
+                    if (!inTable) {
+                        inTable = true;
+                        tableHtml = '<table>';
+                    }
+
+                    let cells = line.split('|').filter(c => c.trim() !== '');
+                    let isSeparator = cells[0] && cells[0].includes('---');
+
+                    if (!isSeparator) {
+                        let tag = inTable && tableHtml.includes('<th>') ? 'td' : 'th';
+                        if (tableHtml.includes('<td>')) tag = 'td';
+
+                        tableHtml += '<tr>' + cells.map(c => `<${tag}>${c.trim()}</${tag}>`).join('') + '</tr>';
+                    }
+                } else if (inTable) {
+                    inTable = false;
+                    tableHtml += '</table>';
+                    lines[i] = tableHtml + line;
+                    tableHtml = '<table>';
+                }
+            }
+
+            if (inTable) {
+                tableHtml += '</table>';
+            }
+
+            html = lines.join('\n');
+
+            // 列表
+            html = html.replace(/^- (.*$)/gim, '<li>$1</li>');
+            html = html.replace(/^\d+\. (.*$)/gim, '<li>$1</li>');
+
+            // 修复连续列表
+            html = html.replace(/<\/li>\n<li>/g, '</li><li>');
+            html = html.replace(/(<li>.*<\/li>\n)+/g, '<ul>$&</ul>');
+            html = html.replace(/<ul><ul>/g, '<ul>').replace(/<\/ul><\/ul>/g, '</ul>');
+
+            // 文本格式
+            html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>');
+            html = html.replace(/~~(.*?)~~/gim, '<del>$1</del>');
+            html = html.replace(/`(.*?)`/gim, '<code>$1</code>');
+
+            // 水平线
+            html = html.replace(/^---$/gim, '<hr>');
+
+            // 段落
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = '<p>' + html + '</p>';
+
+            // 清理空段落
+            html = html.replace(/<p><\/p>/g, '');
+            html = html.replace(/<p>(<h[1-6]>)/g, '$1');
+            html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<table>)/g, '$1');
+            html = html.replace(/(<\/table>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<hr>)/g, '$1');
+            html = html.replace(/(<hr>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<ul>)/g, '$1');
+            html = html.replace(/(<\/ul>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<blockquote>)/g, '$1');
+            html = html.replace(/(<\/blockquote>)<\/p>/g, '$1');
+
+            // 移除pre标签（已经在样式里直接渲染了）
+            html = html.replace(/<pre>|<\/pre>/g, '');
+
+            return html;
+        }
+
+        function markdownToHtml(markdown) {
+            // 简单的Markdown到HTML转换
+            let html = markdown;
+
+            // 标题
+            html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+            html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+            html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+
+            // 表格
+            html = html.replace(/\|(.*)\|/g, function(match) {
+                const cells = match.split('|').filter(c => c.trim() !== '');
+                if (cells.some(c => c.includes('---'))) {
+                    return ''; // 分隔行
+                }
+                return '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
+            });
+            html = html.replace(/(<tr>.*<\/tr>)\n/g, '<table>$1</table>\n');
+
+            // 列表
+            html = html.replace(/^- (.*$)/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)\n/g, '<ul>$1</ul>\n');
+
+            // 加粗
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            // 换行
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = '<p>' + html + '</p>';
+
+            return html;
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('reportModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        function analyzeAll() {
+            if (confirm('确定要分析所有APP吗？这可能需要一些时间。')) {
+                const pendingApps = appsData.filter(app => app.status !== 'completed');
+                if (pendingApps.length === 0) {
+                    alert('所有APP已完成分析！');
+                    return;
+                }
+
+                let completed = 0;
+                pendingApps.forEach((app, index) => {
+                    app.status = 'analyzing';
+                    setTimeout(() => {
+                        app.status = 'completed';
+                        completed++;
+                        renderDashboard();
+
+                        if (completed === pendingApps.length) {
+                            alert('所有APP分析完成！');
+                        }
+                    }, (index + 1) * 2000);
+                });
+
+                renderDashboard();
+            }
+        }
+
+        function exportReports() {
+            alert('正在导出所有分析报告...\n\n（实际应该打包所有生成的Markdown文件）');
+        }
+
+        function refreshData() {
+            loadData();
+        }
+    </script>
+</body>
+</html>

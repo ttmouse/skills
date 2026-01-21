@@ -1,0 +1,20 @@
+{
+  "evaluation_type": "analysis-report",
+  "title": "Alma 深度洞察分析评估",
+  "scores": {
+    "overall": "3",
+    "usefulness": "3",
+    "actionability": "3"
+  },
+  "multi_select": {
+    "most_valuable": [
+      "behavior_pattern",
+      "cognitive_bias"
+    ]
+  },
+  "text_input": {
+    "suggestions": "",
+    "first_action": ""
+  },
+  "timestamp": "2026-01-15T18:11:02.811Z"
+}

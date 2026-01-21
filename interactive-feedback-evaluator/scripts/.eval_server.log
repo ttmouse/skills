@@ -1,0 +1,35 @@
+Starting Interactive Feedback Evaluator Server on port 5002
+Data directory: /Users/douba/.claude/skills/interactive-feedback-evaluator/data
+Feedback file: /Users/douba/.claude/skills/interactive-feedback-evaluator/data/feedback.json
+History directory: /Users/douba/.claude/skills/interactive-feedback-evaluator/data/feedback_history
+
+Available endpoints:
+  - POST http://localhost:5002/generate
+  - POST http://localhost:5002/submit
+  - GET  http://localhost:5002/feedback
+  - GET  http://localhost:5002/status
+  - GET  http://localhost:5002/templates
+
+Press Ctrl+C to stop the server
+ * Serving Flask app 'evaluation_server'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:5002
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [15/Jan/2026 05:35:27] "GET /feedback HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 05:35:29] "POST /generate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 05:35:29] "POST /generate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 05:35:29] "GET /status HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 05:35:29] "GET /templates HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 05:35:30] "GET /feedback HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 05:35:33] "[33mGET / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 05:35:33] "[33mGET / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 05:35:35] "[33mGET / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 05:38:31] "GET /feedback HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jan/2026 00:37:22] "OPTIONS /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jan/2026 00:37:25] "OPTIONS /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jan/2026 00:37:59] "GET /status HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jan/2026 00:38:17] "OPTIONS /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jan/2026 00:38:49] "OPTIONS /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jan/2026 00:39:07] "OPTIONS /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jan/2026 00:39:09] "OPTIONS /submit HTTP/1.1" 200 -

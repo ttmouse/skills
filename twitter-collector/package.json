@@ -1,0 +1,22 @@
+{
+  "name": "twitter-collector-skill",
+  "version": "1.0.0",
+  "description": "自动采集 Twitter 推文并输出链接列表",
+  "main": "scripts/collector.js",
+  "scripts": {
+    "start": "node scripts/collector.js --preset nano-banana-pro",
+    "collect": "node scripts/collector.js",
+    "help": "node scripts/collector.js --help"
+  },
+  "keywords": [
+    "twitter",
+    "collector",
+    "scraper",
+    "playwright"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.57.0"
+  }
+}

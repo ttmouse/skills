@@ -1,0 +1,24 @@
+{
+  "evaluation_type": "daily-chat-evaluation",
+  "title": "今日对话效果评估",
+  "metadata": {
+    "session_date": "2026-01-16",
+    "topics": [
+      "交互式反馈系统",
+      "组件化设计",
+      "CORS调试"
+    ]
+  },
+  "scores": {
+    "satisfaction": "4",
+    "response_quality": "4"
+  },
+  "multi_select": {
+    "most_valuable": []
+  },
+  "text_input": {
+    "improvements": "",
+    "expectations": ""
+  },
+  "timestamp": "2026-01-16T04:41:35.949Z"
+}

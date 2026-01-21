@@ -1,0 +1,18 @@
+{
+  "name": "twitter-fetcher",
+  "version": "1.0.0",
+  "description": "统一的推文内容获取技能",
+  "main": "scripts/fetch.js",
+  "bin": {
+    "twitter-fetch": "./scripts/fetch.js"
+  },
+  "scripts": {
+    "fetch": "node scripts/fetch.js",
+    "test": "node scripts/fetch.js https://x.com/elonmusk/status/1234567890"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0"
+  },
+  "author": "douba",
+  "license": "MIT"
+}
