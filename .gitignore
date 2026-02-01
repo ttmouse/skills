@@ -2,3 +2,4 @@
 
 meta-skill/.vercelignore
 meta-skill/.vercel/project.json
+.alma-snapshots/

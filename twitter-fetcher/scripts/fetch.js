@@ -12,6 +12,7 @@ async function fetchTweet(url, options = {}) {
     timeout = 30000,
     useCDP = false,
     useAuth = false,
+    cdpPort = 9222,
   } = options;
 
   let browser;
@@ -19,7 +20,7 @@ async function fetchTweet(url, options = {}) {
 
   try {
     if (useCDP) {
-      browser = await chromium.connectOverCDP('http://localhost:9222');
+      browser = await chromium.connectOverCDP(`http://localhost:${cdpPort}`);
       context = browser.contexts()[0] || await browser.newContext();
     } else {
       browser = await chromium.launch({ headless: true });
@@ -232,6 +233,7 @@ Twitter Fetcher - 统一的推文内容获取工具
     timeout: 30000,
     useCDP: args.includes('--cdp'),
     useAuth: args.includes('--use-auth'),
+    cdpPort: 9222,
   };
 
   const formatIdx = args.indexOf('--format');
@@ -242,6 +244,11 @@ Twitter Fetcher - 统一的推文内容获取工具
   const timeoutIdx = args.indexOf('--timeout');
   if (timeoutIdx !== -1 && args[timeoutIdx + 1]) {
     options.timeout = parseInt(args[timeoutIdx + 1]);
+  }
+
+  const cdpPortIdx = args.indexOf('--cdp-port');
+  if (cdpPortIdx !== -1 && args[cdpPortIdx + 1]) {
+    options.cdpPort = parseInt(args[cdpPortIdx + 1]);
   }
 
   let result;
