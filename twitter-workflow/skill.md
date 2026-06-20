@@ -175,7 +175,7 @@ twitter-workflow/
 
 grok-json-generator/
 ├── scripts/
-│   └── rok-generator.js  # Grok 转换脚本
+│   └── grok-generator.js # Grok 转换脚本
 └── README.md              # Grok 转换说明
 
 db-importer/
@@ -226,7 +226,7 @@ cat /Users/douba/twitter-output/twitter-links-2026-01-13.txt
 open /Users/douba/twitter-output/twitter-preview-2026-06-13.html
 
 # 检查 Grok 数据
-cat /   /Users/douba/twitter-output/grok-data-2026-06-13.json
+cat /Users/douba/twitter-output/grok-data-2026-06-13.json
 ```
 
 ### 2. 断点续跑
